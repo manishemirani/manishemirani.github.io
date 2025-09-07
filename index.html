@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Blog</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.0/katex.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: white;
+            color: black;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: black;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #f5f5f5;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 280px;
+            padding: 6rem 2rem 2rem;
+            background-color: white;
+            border-right: 1px solid #e0e0e0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .profile-section {
+        display: flex;
+        flex-direction: column; /* stack items vertically */
+        align-items: center;    /* center horizontally */
+        gap: 0.5rem;            /* uniform spacing between items */
+        margin-bottom: 2rem;
+        }
+
+        .profile-picture {
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #f0f0f0;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .profile-title {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .social-media {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background-color: #e0e0e0;
+            color: black;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 6rem 2rem 2rem;
+            flex: 1;
+        }
+
+        .section {
+            display: none;
+            max-width: 800px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            font-weight: 600;
+        }
+
+        /* Blog Section Styles */
+        .tag-filter {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag.active {
+            background-color: #333;
+            color: white;
+        }
+
+        .tag:hover {
+            background-color: #ddd;
+        }
+
+        .blog-post, .paper-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .blog-post:last-child, .paper-item:last-child {
+            border-bottom: none;
+        }
+
+        .blog-post:hover, .paper-item:hover {
+            background-color: #fafafa;
+            padding: 1.5rem;
+            margin: 0 -1.5rem 1.5rem;
+            border-radius: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .blog-title, .paper-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: black;
+            text-decoration: none;
+            display: block;
+        }
+
+        .blog-title:hover, .paper-title:hover {
+            color: #666;
+        }
+
+        .blog-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .blog-tags {
+            display: flex;
+            gap: 0.3rem;
+            margin-top: 0.8rem;
+        }
+
+        .blog-tag {
+            padding: 0.2rem 0.5rem;
+            background-color: #f8f8f8;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* Papers Section Styles */
+        .paper-authors {
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+            font-size: 0.95rem;
+        }
+
+        .paper-venue {
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* About Section Styles */
+        .about-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .about-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Math Support */
+        .katex {
+            font-size: 1.1em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 6rem 1rem 2rem;
+            }
+            
+            .nav-content {
+                padding: 0 1rem;
+                gap: 1rem;
+            }
+            
+            .section h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-content">
+            <a href="#about" class="nav-link active" onclick="showSection('about', this)">About</a>
+            <a href="#blogs" class="nav-link" onclick="showSection('blogs', this)">Blogs</a>
+            <a href="#papers" class="nav-link" onclick="showSection('papers', this)">Papers</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="profile-section">
+                <div class="profile-picture">
+                    <img src="assests/profile_pic.jpg" alt="Profile Picture">
+                </div>
+                <h2 class="profile-name">Mani Shemiranifar</h2>
+                <p class="profile-title">Independent Researcher</p>
+                
+                <div class="social-media">
+                    <a href="https://x.com/mani_shemi" class="social-link" title="X" target="_blank">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://github.com/manishemirani" class="social-link" title="GitHub" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=EiO0JSsAAAAJ&hl=en" class="social-link" title="Scholar" target="_blank">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </a>                    
+                    <a href="mailto:m.shemiranifar@gmail.com" class="social-link" title="Email" target="_blank">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section id="about-section" class="section active">
+                <h1>About Me</h1>
+                <div class="about-content">
+                    <p>I' currently an independent researcher working towards brain-like foundation models. My work focuses on Adaptive computation, Continuous-Depth models, Optimization algorithms, and making black-box models transparent.</p>
+        
+                    <p>I'm also huge fan of engineering side of AI, like training large models on GPU clusters and developing frameworks for analyzing models during inference.</p>
+            
+                                    
+                    <h2>Current Interests</h2>
+                    <p>I'm particularly interested in:</p>
+                    <p>• Adaptive computation and dynamic neural architectures<br>
+                       • Reasoning and interpretability in AI systems<br>
+                       • Designing efficient networks for real-world applications</p>
+                    
+                </div>
+            </section>
+
+            <section id="blogs-section" class="section">
+                <h1>Blog Posts</h1>
+                
+                <div class="tag-filter">
+                    <span class="tag active" onclick="filterByTag('all', this)">All</span>
+                    <span class="tag" onclick="filterByTag('research', this)">Research</span>
+                </div>
+
+                <div id="blog-posts">
+                    <article class="blog-post" data-tags="mathematics research">
+                        <b class="blog-title">Stay tuned for an interesting one!</b>
+                        <div class="blog-date">March 6, 2025</div>
+                        <div class="blog-tags">
+                            <span class="blog-tag">research</span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="papers-section" class="section">
+                <h1>Publications</h1>
+                
+                <div class="paper-item" onclick="toggleAbstract(this)">
+                    <a href="https://arxiv.org/abs/2505.14467" class="paper-title" target="_blank" 
+                    rel="noopener noreferrer">Void in Language Models</a>
+                    <div class="paper-authors">Mani Shemiranifar</div>
+                    <div class="paper-venue">arXiv preprint, 2025</div>
+                    
+                    <div class="paper-abstract">
+                        <p>
+                            Despite advances in transformer-based language models (LMs), a fundamental question remains largely
+                    unanswered: Are all layers activated during inference? We investigate this question by detecting unactivated
+                    layers (which we refer to as Voids) using a non-trainable and parameter-free adaptive computation method
+                    called L2 Adaptive Computation (LAC). We adapt LAC from its original efficiency-focused application to trace
+                    activated layers during inference. This method monitors changes in the L2-norm of activations to identify
+                    voids. We analyze layer activation in instruction-tuned LMs across two phases: Prompt Processing (PP), where
+                    we trace activated layers for each token in the input prompts, and Response Generation (RG), where we trace
+                    activated layers for each generated token. We further demonstrate that distinct layers are activated during
+                    these two phases. To show the effectiveness of our method, we evaluated three distinct instruction-tuned LMs
+                    from the Llama, Mistral, and Qwen families on three benchmarks: MMLU, GPQA Diamond, and BoolQ. For
+                    example, on MMLU with a zero-shot setting, skipping voids in Qwen2.5-7B-Instruct resulted in an improvement
+                    from 69.24 to 71.29 while the model uses only 30% of the layers. Similarly, Mistral-7B-Instruct-v0.3 on GPQA
+                    Diamond improved from 13.88 to 18.36 when using 70% of the layers during both the PP and RG phases. These
+                    results show that not all layers contribute equally during inference, and that selectively skipping most of them
+                    can improve the performance of models on certain tasks.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="paper-item" onclick="toggleAbstract(this)">
+                    <a href="https://openreview.net/forum?id=qW_GZYyn7C" class="paper-title" target="_blank" 
+                    rel="noopener noreferrer">L2 Norm Guided Adaptive Computation</a>
+                    <div class="paper-authors">Mani Shemiranifar, Mostafa Dehghani</div>
+                    <div class="paper-venue">ICLR TinyPapers, 2023</div>
+                    
+                    <div class="paper-abstract">
+                        <p>
+                            Although the human brain can adjust the amount of time and energy it uses to solve
+                        problems of varying complexity, many standard neural networks require a fixed
+                        computation budget regardless of the problem’s complexity. This work introduces
+                        L2 Adaptive Computation (LAC), a new algorithm that adjusts the computation
+                        budget, by tracking changes in the L2 norm of a neural network’s hidden state as
+                        layers are applied to the input. Unlike previous methods, LAC does not require
+                        additional trainable modules or auxiliary loss terms to make halting decisions. LACmatches the results of best-performing methods on a complex synthetic task and
+                        improves image classification accuracy while also increasing efficiency.
+                        </p>
+                    </div>
+                </div>
+
+
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionName, navElement) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            navElement.classList.add('active');
+            
+            // Close mobile menu if open
+            closeMobileMenu();
+        }
+
+        function filterByTag(tag, tagElement) {
+            const posts = document.querySelectorAll('.blog-post');
+            const tags = document.querySelectorAll('.tag');
+            
+            // Update tag styling
+            tags.forEach(t => t.classList.remove('active'));
+            tagElement.classList.add('active');
+            
+            // Filter posts
+            posts.forEach(post => {
+                if (tag === 'all' || post.dataset.tags.includes(tag)) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        }
+
+        // Close mobile menu when clicking on sidebar links
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+        });
+
+        // Initialize KaTeX for math rendering
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-render any math expressions
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body);
+            }
+        });
+    </script>
+</body>
+</html>
